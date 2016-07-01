@@ -7,11 +7,11 @@
 //
 
 import UIKit
-import Realm
+import RealmSwift
 
 class ListNotesTableViewController: UITableViewController {
     
-    var notes = [Note]() {
+    var notes: Results<Note>! {
         didSet {
             tableView.reloadData()
         }
@@ -26,12 +26,11 @@ class ListNotesTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        notes = RealmHelper.retrieveNote()
     }
     
     @IBAction func unwindToListNotesViewController(segue: UIStoryboardSegue) {
         print ("Unwinded")
-        // for now, simply defining the method is sufficient.
-        // we'll add code later
     }
     
     //Number of cells
@@ -75,5 +74,36 @@ class ListNotesTableViewController: UITableViewController {
 //        var image : UIImage = UIImage(named:"test.jpeg")!
 //        cell.notesImage.image = image
         return cell
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let identifier = segue.identifier {
+            if identifier == "displayNote" {
+                print ("Transitioning to display note")
+                let indexPath = tableView.indexPathForSelectedRow!
+                // 2
+                let note = notes[indexPath.row]
+                // 3
+                let displayNoteViewController = segue.destinationViewController as! DisplayNoteViewController
+                // 4f
+                displayNoteViewController.note = note
+                
+            }
+            else if identifier == "addNote" {
+                print ("Add note button pressed")
+            }
+        }
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        // 2
+        if editingStyle == .Delete {
+            // 3
+            tableView.allowsMultipleSelection = true
+            RealmHelper.deleteNote(notes[indexPath.row])
+//            notes.removeAtIndex(indexPath.row)
+            // 4
+            tableView.reloadData()
+        }
     }
 }
