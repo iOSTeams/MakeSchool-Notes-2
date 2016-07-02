@@ -53,16 +53,15 @@ class DisplayNoteViewController: UIViewController {
                         print("delete note")
                         RealmHelper.deleteNote(note)
                     }
+                } else if (noteContentTextView.text?.characters.count > 0) || (noteTitleTextField.text?.characters.count > 0) {
+                    let note = Note()
+                    note.title = noteTitleTextField.text ?? ""
+                    note.content = noteContentTextView.text ?? ""
+                    note.modificationTime = NSDate()
+                    RealmHelper.addNote(note)
                 }
-                
-            }   else if (noteContentTextView.text?.characters.count > 0) || (noteTitleTextField.text?.characters.count > 0) {
-                let note = Note()
-                note.title = noteTitleTextField.text ?? ""
-                note.content = noteContentTextView.text ?? ""
-                note.modificationTime = NSDate()
-                RealmHelper.addNote(note)
+                listNotesTableViewController.notes = RealmHelper.retrieveNote()
             }
-            listNotesTableViewController.notes = RealmHelper.retrieveNote()
         }
     }
 }
