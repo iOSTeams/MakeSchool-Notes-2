@@ -31,7 +31,7 @@ class RealmHelper {
     }
     
     static func updateNote(oldNote: Note, newNote: Note) {
-        var realm = try! Realm()
+        let realm = try! Realm()
         try! realm.write() {
         oldNote.content = newNote.content
         oldNote.title = newNote.title

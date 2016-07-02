@@ -40,20 +40,28 @@ class DisplayNoteViewController: UIViewController {
         
         if let identifier = segue.identifier {
             if identifier == "save" {
+                let content = noteContentTextView.text?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).characters.count
+                let title = noteTitleTextField.text?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).characters.count
+                print("The content is \(content!)")
                 if let note = note {
-                    let newNote = Note()
-                    newNote.title = noteTitleTextField.text ?? ""
-                    newNote.content = noteContentTextView.text ?? ""
-                    RealmHelper.updateNote(note, newNote: newNote)
+                    if ( content! > 0) || (title! > 0) {
+                        let newNote = Note()
+                        newNote.title = noteTitleTextField.text ?? ""
+                        newNote.content = noteContentTextView.text ?? ""
+                        RealmHelper.updateNote(note, newNote: newNote)
+                    } else {
+                        print("delete note")
+                        RealmHelper.deleteNote(note)
+                    }
                 }
+                
+            }   else if (noteContentTextView.text?.characters.count > 0) || (noteTitleTextField.text?.characters.count > 0) {
+                let note = Note()
+                note.title = noteTitleTextField.text ?? ""
+                note.content = noteContentTextView.text ?? ""
+                note.modificationTime = NSDate()
+                RealmHelper.addNote(note)
             }
-//            else if (noteContentTextView.text?.isEmpty) || (noteTitleTextField.text?.characters.count > 0) {
-//                let note = Note()
-//                note.title = noteTitleTextField.text ?? ""
-//                note.content = noteContentTextView.text ?? ""
-//                note.modificationTime = NSDate()
-//                RealmHelper.addNote(note)
-//            }
             listNotesTableViewController.notes = RealmHelper.retrieveNote()
         }
     }
